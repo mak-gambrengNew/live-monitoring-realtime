@@ -84,7 +84,7 @@ header{position:sticky;top:0;z-index:5;background:rgba(6,9,13,.97);border-bottom
 <div class="standby" id="standby">
   <div class="standby-title">MONITORING TIDAK AKTIF</div>
   <div class="standby-marquee"><span>MONITORING TIDAK AKTIF • SEMUA GERAI TELAH TUTUP • MENUNGGU GERAI MEMULAI OPERASIONAL</span></div>
-  <div class="standby-text">Semua Gerai sedang tutup. Data penjualan hari ini sudah tidak ditampilkan sebagai realtime.</div>
+  <div class="standby-text">Semua Gerai sedang tutup. Monitoring live berhenti sementara dan akan aktif otomatis saat Gerai mulai beroperasi.</div>
   <div class="last-summary"><div class="last-box"><b id="lastSales">Rp 0</b><span>penjualan terakhir</span></div><div class="last-box"><b id="lastOrders">0</b><span>transaksi terakhir</span></div><div class="last-box"><b id="lastStores">0</b><span>Gerai</span></div></div>
 </div>
 <div class="update">Terakhir diperbarui <b id="footClock">--:--:-- WIB</b></div></div>
@@ -202,6 +202,8 @@ async function refreshAll(){
 async function refreshIfNeeded(){if(document.hidden)return;const now=Date.now();if(now-lastRefresh<300000)return;await refreshAll();}
 window.addEventListener('online',()=>refreshAll());
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshIfNeeded();});
+const FALLBACK_REFRESH_MS=300000;
+const fallbackTimer=setInterval(()=>{if(!document.hidden)refreshIfNeeded();},FALLBACK_REFRESH_MS);
 async function initRealtime(){
   if(window._monitorChannel) return;
   const channel=supabase.channel('monitoring-ui')
